@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App 1</title>
+    <style>
+        html {
+            font-size: 65%;
+        }
+       button {
+           display: block;
+           width: 15rem;
+           background-color: skyblue;
+           margin: 2rem auto;
+       }
+    </style>
+</head>
+<body>
+    <button id="bton">Show news</button>
+    <div id="container" style="border: 2px solid black;"></div>
+    <script>
+        const cont = document.getElementById("container");
+        const btn = document.getElementById("bton");
+        var flag  = 0;
+
+        function getNews() {
+            if(flag === 0) {
+                flag = 1;
+                btn.style.backgroundColor = "white";
+                return fetch("https://newsapi.org/v2/everything?q=Apple&from=2021-09-28&sortBy=popularity&apiKey=f57b5d7bedc9456a870d6a2cce6e2079")
+                .then(function (response) {
+                    return response.json()
+                }).then(function (response) {
+                    
+                    //console.log(response.articles[i].title)
+                        createNews(response);
+                
+                })
+                }
+           
+        }
+        
+        function createNews(response) {
+            const ul = document.createElement("ul");
+            for(var i = 0; i < 10; i++) {
+                const li = document.createElement("li");
+                li.style.margin = 20+"px";
+                li.style.fontSize = 1.6+"rem";
+                li.style.color = "red";
+                li.textContent = response.articles[i].title;
+                ul.append(li)
+            }
+            cont.append(ul)
+        }
+        
+        btn.addEventListener('click', getNews)
+    </script>
+</body>
+</html>
