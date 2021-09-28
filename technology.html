@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology News</title>
+    <style>
+        html {
+            font-size: 65%;
+        }
+     h1 {
+         text-align: center;
+         color: red;
+         margin: 2rem auto;
+         background-color: black;
+         border: 2px solid blue;
+         padding: 2rem;
+     }
+    </style>
+</head>
+<body>
+    <h1>Technology News</h1>
+    <div id="container"></div>
+    <script>
+        const cont = document.getElementById("container")
+        function getNews() {
+            return fetch("https://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=f57b5d7bedc9456a870d6a2cce6e2079")
+            .then(function (response) {
+                return response.json()
+            }).then(function (response) {
+                console.log(response.articles[0].title)
+                createNews(response)
+            })
+        }
+
+        function createNews(response) {
+            const ul = document.createElement("ul");
+            for(var i = 0; i < 10; i++) {
+                const li = document.createElement("li");
+                li.style.margin = 20+"px";
+                li.style.fontSize = 1.6+"rem";
+                li.style.color = "red";
+                li.textContent = response.articles[i].title;
+                ul.append(li)
+            }
+            cont.append(ul)
+        }
+
+        getNews()
+    </script>
+</body>
+</html>
