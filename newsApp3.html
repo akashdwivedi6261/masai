@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App 3</title>
+    <style>
+        html {
+            font-size: 65%;
+           
+        }
+        #cont {
+            display: flex;
+            background-color: skyblue;
+            height: 8rem;
+            color: red;
+            font-size: 1.8rem;
+            text-align: right;
+        }
+        a {
+            margin: 2rem 6rem ;
+        }
+        input {
+            margin: 2rem;
+        }
+        #btn {
+            width: 10rem;
+            height: 4rem;
+            margin: 2rem 4rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="cont">
+        <a href="sports.html">Sports</a>
+        <a href="entertainment.html">Entertainment</a>
+        <a href="technology.html">Technology</a>
+        <input id="inpt" placeholder="Search Box" style="height: 4rem;"/>
+        <button id="btn">Search</button>
+    </div>
+    <div id="new">
+
+    </div>
+    <div id="pagination" style="margin: 3rem;">
+
+    </div>
+    <script>
+
+
+        var currentPage = 1;
+        var limit = 3;
+
+        var inputs = document.getElementById("inpt");
+        var btns = document.getElementById("btn");
+        var news = document.getElementById("new");
+
+        var pagination = document.getElementById("pagination")
+        //page.addEventListener("click", handlePage)
+        var currentPage = 1;
+
+        window.addEventListener("load", () => {
+            createPagination()
+            pagination.addEventListener('click', handlePage)
+            btns.addEventListener('click', display)
+        })
+        function createPagination() {
+            pagination.innerHTML = null;
+            var prev = document.createElement("button");
+            prev.textContent = "Previous";
+            prev.name = currentPage - 1;
+            if(currentPage === 1) {
+                prev.disabled = true
+            }
+
+            var cur = document.createElement("button");
+            cur.textContent = currentPage;
+            cur.name = currentPage;
+
+            var next = document.createElement("button");
+            next.textContent = "Next";
+            next.name = currentPage+1;
+
+            pagination.append(prev, cur, next)
+
+        }
+
+       function handlePage() {
+            
+                var pageNumber = parseInt(event.target.name);
+                currentPage = pageNumber;
+                display(currentPage)
+                createPagination()
+            
+        }
+        function getNews(page) {
+            page = page || 1;
+            //limit = limit || 3;
+            fetch(`https://newsapi.org/v2/everything?q=${inputs.value}&pageSize=5&page=${page}&apiKey=f57b5d7bedc9456a870d6a2cce6e2079`)
+            .then(function (response) {
+                return response.json()
+            }).then((response) => {
+                createNews(response)
+            })
+        }
+
+        async function display(page) {
+            var results = await getNews(page)
+            console.log(results)
+        }
+        function createNews(response) {
+            const ul = document.createElement("ul");
+            news.innerHTML=null;
+            for(var i = 0; i < 5; i++) {
+                const li = document.createElement("li");
+                li.style.margin = 20+"px";
+                li.style.fontSize = 1.6+"rem";
+                li.style.color = "red";
+                
+                li.textContent = response.articles[i].title;
+
+                
+                //console.log(response.articles[i])
+                ul.append(li)
+            }
+            news.append(ul)
+            //inputs.value = ""
+        }
+
+        
+    </script>
+</body>
+</html>
