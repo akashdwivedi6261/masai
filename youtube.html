@@ -1,0 +1,157 @@
+<!--AIzaSyBQuqoFoSzIWzmgXHArZa6Rgv4ag5E1lnI-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #inpt{
+            width: 16rem;
+            margin: auto;
+        }
+        #vid {
+            width: 40%;
+            margin: 0 auto 0rem auto;
+
+        }
+        #result {
+            display: flex;
+            width: 100%;
+            border: 2px solid red;
+            height: 700px;
+            flex-wrap: wrap;
+        }
+        #result>div {
+            flex-basis: 20%;
+            width: 200px;
+            margin: 0rem 6rem;
+        }
+        .flex {
+            width: 14rem;
+            display: flex;
+            margin: 0.5rem auto 4rem auto;
+           
+        }
+        .flex>button {
+            margin: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="vid">
+        <input id="inpt" placeholder="Search"/>
+        <button id="btn">Search</button>
+    </div>
+
+    <div id="page" class="flex">
+        <button name="prev">Prev</button>
+        <button name="next">Next</button>
+    </div>
+
+    <div id="result">
+
+    </div>
+    <script>
+        //var search = topic.value;
+
+        window.addEventListener("load", function () {
+        btn.addEventListener('click', ()=>handleSearch())
+            const pagination = document.getElementById("page");
+            pagination.addEventListener('click',handlePage)
+        })
+        var btn = document.getElementById("btn")
+        //const div = document.getElementById("conts");
+        
+        const types = {//ignoring channel
+            video: "youtube#video",
+            channel: "youtube#channel"
+        }
+        Object.freeze(types);
+
+        let pageInfo = {
+            nextToken: null,
+            prevToken: null 
+        }
+
+        const pageType = {
+            next: "next",
+            prev: "prev"
+        }
+
+        function handlePage() {
+            console.log("akash")
+            /*if(![pageType.next, pageType.prev].includes(pageType)) {
+                return false;
+            }*/
+            const token = event.target.name === pageType.next ? pageInfo.nextToken : pageInfo.prevToken;
+            console.log(token)
+            handleSearch(token)
+        }
+
+        function getResultFromYouTube({q,pageToken}) {
+            if(pageToken) {
+                return fetch(`https://youtube.googleapis.com/youtube/v3/search?q=${q}&key=AIzaSyBQuqoFoSzIWzmgXHArZa6Rgv4ag5E1lnI&pageToken=${pageToken}`)
+               .then(res => res.json())
+            }
+            return fetch(`https://youtube.googleapis.com/youtube/v3/search?q=${q}&key=AIzaSyBQuqoFoSzIWzmgXHArZa6Rgv4ag5E1lnI`)
+            .then(res => res.json())
+        }
+
+        function createYouTubeVideoCard(data) {
+            //console.log(data)
+            const div = document.createElement("div");
+            /*if(data.id.kind === types.channel) {
+                return false
+            }*/
+            div.innerHTML = `<iframe width="350" height="200" display="flex"
+            src="https://www.youtube.com/embed/${data.id.videoId}" 
+            title="YouTube video player" 
+            frameborder="0" allow="accelerometer; 
+            autoplay; clipboard-write; encrypted-media;
+             gyroscope; picture-in-picture" allowfullscreen>
+             </iframe>`
+            return div;
+        }
+
+       async function handleSearch(token) {
+        const search = document.getElementById("inpt").value;
+        try{
+            var ans = await getResultFromYouTube(
+                {   q:search,     
+                    pageToken:token
+                });
+            console.log(ans);
+
+            const {items: results,
+                pageInfo: {
+                    resultsPerPage,
+                    totalResults
+                },
+                nextPageToken,
+                prevPageToken
+            } = ans;
+                // * set page tokens correctly
+            pageInfo.nextToken = nextPageToken ? nextPageToken : null;
+            pageInfo.prevToken = prevPageToken ? prevPageToken : null;
+            const allCards = []
+            for(let video of results) {
+                const card = createYouTubeVideoCard(video);
+                if(card) {
+                   allCards.push(card);
+                }
+            }
+            const resultCont = document.getElementById("result");
+            resultCont.innerHTML = null;
+            resultCont.append(...allCards)
+            }
+            catch(err) {
+                //handle error
+            }
+        }
+
+    </script>
+</body>
+</html>
