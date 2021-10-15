@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            font-size: 65%
+        }
+        #cont > div {
+         margin: 3rem;
+         border: 2px solid black;
+         display: flex;
+         width: 55rem;
+        }
+    </style>
+    
+</head>
+<body>
+    <input type="text" id="inpt" onkeyup="onClick()"/>
+    <button id="btn">Search Movie</button>
+    <div id="cont">
+      
+
+    </div>
+    <script>
+        var input = document.getElementById("inpt");
+        var btn = document.getElementById("btn");
+        var div = document.getElementById("cont");
+  
+        var key = "5ec022f";
+      let id;
+      
+      function onClick() {
+          if(input.value) {
+                    id = setTimeout(() => {
+                        fetch("http://www.omdbapi.com/?s="+input.value+"&apikey=5ec022f")
+                        .then(function (response) {
+                            console.log(response);
+                            return response.json();
+                        }).catch((err) => {
+                            div.style.fontSize = 30+"px";
+                            div.append("Movie not found")
+                            clearTimeout(id);
+                        })
+                        .then(function (response) {
+                            console.log(response);
+                            showMovie(response, id);
+                        }).catch((er) => {
+                            div.style.fontSize = 30+"px";
+                            div.append("Movie not found")
+                            clearTimeout(id);
+                        })
+                    },2000)
+            }
+            else {
+                return
+            }
+          }
+   
+       
+      
+
+        function showMovie(data, id) {
+            div.innerHTML = null;
+            var div1 = document.createElement("div")
+            var right = document.createElement("div");
+
+            var img = document.createElement("img");
+            img.src = data.Search[0].Poster;
+            img.style.width = 15+"rem"
+            img.style.height = 15+"rem"
+
+            var title = document.createElement("h2");
+            title.textContent = "Title: "+data.Search[0].Title;
+            right.style.marginLeft = 20+"px"
+
+            var year = document.createElement("h3");
+            year.textContent = "Release year: "+ data.Search[0].Year;
+            right.append(title, year);
+            div1.append(img, right)
+            div.append(div1)
+            clearTimeout(id);
+            
+        }
+            
+        //input.addEventListener('onkeyup', onclick);
+    </script>
+</body>
+</html>
